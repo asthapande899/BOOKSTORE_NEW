@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Order #{{ order.id }}</h1>
+        <span class="badge bg-{% if order.is_completed %}success{% else %}warning{% endif %}">
+            {% if order.is_completed %}Completed{% else %}Processing{% endif %}
+        </span>
+    </div>
+    
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3">Order Details</h5>
+                    <p><strong>Date:</strong> {{ order.created_at|date:"F j, Y H:i" }}</p>
+                    <p><strong>Status:</strong> {% if order.is_completed %}Completed{% else %}Processing{% endif %}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mb-3">Customer Details</h5>
+                    <p><strong>Name:</strong> {{ order.user.username }}</p>
+                    <p><strong>Email:</strong> {{ order.user.email }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <h5 class="mb-3">Order Items</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.orderitem_set.all %}
+                        <tr>
+                            <td>{{ item.book.title }}</td>
+                            <td>${{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.get_total }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="table-secondary">
+                            <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                            <td class="fw-bold">${{ order.total }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

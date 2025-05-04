@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Your Shopping Cart</h1>
+    
+    {% if not cart_items %}
+    <div class="alert alert-info">
+        Your cart is empty. <a href="{% url 'home' %}" class="alert-link">Continue shopping</a>.
+    </div>
+    {% else %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Book</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>
+                        <a href="{% url 'book_detail' item.book.id %}" class="text-decoration-none">
+                            {{ item.book.title }}
+                        </a>
+                    </td>
+                    <td>${{ item.book.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.item_total }}</td>
+                    <td>
+                        <form method="post" action="{% url 'remove_from_cart' item.book.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="table-secondary">
+                    <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                    <td colspan="2" class="fw-bold">${{ total }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Continue Shopping</a>
+        <form method="post" action="{% url 'checkout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Proceed to Checkout</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

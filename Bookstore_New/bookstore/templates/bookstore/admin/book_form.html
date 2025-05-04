@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if book %}Edit {{ book.title }}{% else %}Add New Book{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">
+                        {% if book %}Edit Book{% else %}Add New Book{% endif %}
+                    </h2>
+                    
+                    {% if errors %}
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            {% for field, error in errors.items %}
+                            <li>{{ field|title }}: {{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   value="{% if book %}{{ book.title }}{% elif form_data %}{{ form_data.title }}{% endif %}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="author" class="form-label">Author</label>
+                            <input type="text" class="form-control" id="author" name="author" 
+                                   value="{% if book %}{{ book.author }}{% elif form_data %}{{ form_data.author }}{% endif %}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4">{% if book %}{{ book.description }}{% elif form_data %}{{ form_data.description }}{% endif %}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label">Price ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" 
+                                       value="{% if book %}{{ book.price }}{% elif form_data %}{{ form_data.price }}{% else %}0.00{% endif %}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="stock" class="form-label">Stock Quantity</label>
+                                <input type="number" class="form-control" id="stock" name="stock" 
+                                       value="{% if book %}{{ book.stock }}{% elif form_data %}{{ form_data.stock }}{% else %}0{% endif %}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="cover_image" class="form-label">Cover Image</label>
+                            <input type="file" class="form-control" id="cover_image" name="cover_image">
+                            {% if book and book.cover_image %}
+                            <div class="mt-2">
+                                <small>Current image:</small>
+                                <img src="{{ book.cover_image.url }}" class="img-thumbnail mt-1" style="max-height: 100px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'admin_book_list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Book</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
